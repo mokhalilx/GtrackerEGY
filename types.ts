@@ -33,6 +33,9 @@ export interface MarketAnalysis {
 export interface AppState {
   theme: Theme;
   language: Language;
+  notificationsEnabled: boolean;
+  refreshInterval: number; // in milliseconds
+  showSettings: boolean;
   isLoading: boolean;
   error: string | null;
   data: GoldData | null;

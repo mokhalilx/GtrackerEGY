@@ -42,7 +42,17 @@ export const translations = {
     newsTitle: "Local Market News",
     min: "Min",
     max: "Max",
-    avg: "Avg"
+    avg: "Avg",
+    notificationsEnabled: "Disable Notifications",
+    notificationsDisabled: "Enable Notifications",
+    notificationTitle: "Gold Price Update",
+    notificationBody: "21k Gold is now {price} EGP. Trend: {trend}",
+    permissionDenied: "Notification permission denied. Please enable it in your browser settings.",
+    settings: "Settings",
+    updateFrequency: "Update Frequency",
+    every30min: "Every 30 Minutes",
+    every1hour: "Every 1 Hour",
+    close: "Close"
   },
   ar: {
     title: "GoldTracker",
@@ -85,7 +95,17 @@ export const translations = {
     newsTitle: "أخبار السوق المحلي",
     min: "أقل سعر",
     max: "أعلى سعر",
-    avg: "متوسط"
+    avg: "متوسط",
+    notificationsEnabled: "تعطيل الإشعارات",
+    notificationsDisabled: "تفعيل الإشعارات",
+    notificationTitle: "تحديث أسعار الذهب",
+    notificationBody: "عيار 21 الآن {price} جنيه. الاتجاه: {trend}",
+    permissionDenied: "تم رفض إذن الإشعارات. يرجى تفعيلها من إعدادات المتصفح.",
+    settings: "الإعدادات",
+    updateFrequency: "تكرار التحديث",
+    every30min: "كل 30 دقيقة",
+    every1hour: "كل 1 ساعة",
+    close: "إغلاق"
   }
 };
 

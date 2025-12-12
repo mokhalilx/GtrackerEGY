@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AppState } from './types';
 import { fetchGoldMarketData } from './services/geminiService';
 import { getTranslation } from './utils/translations';
@@ -8,20 +8,31 @@ import CurrencyTicker from './components/CurrencyTicker';
 import UpdateTimer from './components/UpdateTimer';
 import WorkmanshipWidget from './components/WorkmanshipWidget';
 import NewsFeed from './components/NewsFeed';
-import { TrendingUp, Globe, Moon, Sun } from 'lucide-react';
+import SettingsModal from './components/SettingsModal';
+import { TrendingUp, Globe, Moon, Sun, Settings } from 'lucide-react';
 
-const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
+const DEFAULT_REFRESH_MS = 30 * 60 * 1000; // 30 minutes
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>({
     theme: 'dark',
     language: 'en',
+    notificationsEnabled: false,
+    refreshInterval: DEFAULT_REFRESH_MS,
+    showSettings: false,
     isLoading: true,
     error: null,
     data: null,
     analysis: null,
-    nextUpdate: Date.now() + REFRESH_INTERVAL_MS,
+    nextUpdate: Date.now() + DEFAULT_REFRESH_MS,
   });
+
+  // Ref to access current notification state inside useCallback/useEffect without adding it to dependencies (avoiding loops)
+  const notificationsEnabledRef = useRef(state.notificationsEnabled);
+
+  useEffect(() => {
+    notificationsEnabledRef.current = state.notificationsEnabled;
+  }, [state.notificationsEnabled]);
 
   const t = getTranslation(state.language);
 
@@ -56,6 +67,38 @@ const App: React.FC = () => {
     }));
   };
 
+  const toggleSettings = () => {
+    setState(prev => ({ ...prev, showSettings: !prev.showSettings }));
+  };
+
+  const handleToggleNotifications = async () => {
+    if (state.notificationsEnabled) {
+      setState(prev => ({ ...prev, notificationsEnabled: false }));
+    } else {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        setState(prev => ({ ...prev, notificationsEnabled: true }));
+        new Notification(t.notificationsEnabled);
+      } else {
+        alert(t.permissionDenied);
+      }
+    }
+  };
+
+  const handleSetInterval = (ms: number) => {
+    setState(prev => ({ 
+      ...prev, 
+      refreshInterval: ms,
+      // Reset timer based on new interval
+      nextUpdate: Date.now() + ms 
+    }));
+  };
+
   const loadData = useCallback(async () => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
@@ -67,8 +110,25 @@ const App: React.FC = () => {
         error: null,
         data,
         analysis,
-        nextUpdate: Date.now() + REFRESH_INTERVAL_MS,
+        nextUpdate: Date.now() + prev.refreshInterval,
       }));
+
+      // Trigger Notification if enabled
+      if (notificationsEnabledRef.current && Notification.permission === "granted" && data) {
+        const trendKey = `trend_${analysis.prediction}` as keyof typeof t;
+        const trendText = t[trendKey];
+        const price = data.price21k.toLocaleString(state.language === 'ar' ? 'ar-EG' : 'en-US');
+        
+        const body = t.notificationBody
+          .replace('{price}', price)
+          .replace('{trend}', trendText);
+
+        new Notification(t.notificationTitle, {
+          body: body,
+          icon: '/favicon.ico', 
+        });
+      }
+
     } catch (err: any) {
       console.error("Failed to load data", err);
       setState(prev => ({
@@ -77,7 +137,7 @@ const App: React.FC = () => {
         error: t.error,
       }));
     }
-  }, [state.language, t.error]);
+  }, [state.language, t]);
 
   // Fetch data when language changes or on mount
   useEffect(() => {
@@ -101,6 +161,16 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 pb-12 transition-all duration-300">
+      <SettingsModal 
+        isOpen={state.showSettings}
+        onClose={toggleSettings}
+        language={state.language}
+        notificationsEnabled={state.notificationsEnabled}
+        onToggleNotifications={handleToggleNotifications}
+        refreshInterval={state.refreshInterval}
+        onSetInterval={handleSetInterval}
+      />
+
       {/* Navbar */}
       <nav className="border-b border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,6 +190,18 @@ const App: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={toggleSettings}
+                className={`p-2 rounded-lg transition-colors ${
+                  state.notificationsEnabled 
+                    ? 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400' 
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+                title={t.settings}
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"

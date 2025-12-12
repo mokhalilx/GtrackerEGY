@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { MarketAnalysis as MarketAnalysisType, Language } from '../types';
 import { BrainCircuit, ExternalLink, AlertTriangle } from 'lucide-react';
 import { getTranslation } from '../utils/translations';
@@ -54,9 +55,21 @@ const MarketAnalysis: React.FC<MarketAnalysisProps> = ({ analysis, loading, lang
         </div>
       </div>
 
-      <div className="prose prose-sm max-w-none flex-grow overflow-y-auto max-h-[400px] pe-2 custom-scrollbar">
-        <div className="whitespace-pre-line text-slate-700 dark:text-slate-300 leading-relaxed text-start">
-          {analysis.summary}
+      <div className="flex-grow overflow-y-auto max-h-[400px] pe-2 custom-scrollbar">
+        <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-start text-sm">
+          <ReactMarkdown
+            components={{
+              h1: ({node, ...props}) => <h3 className="text-base font-bold mb-2 mt-4 text-slate-900 dark:text-slate-100" {...props} />,
+              h2: ({node, ...props}) => <h4 className="text-sm font-bold mb-2 mt-3 text-slate-900 dark:text-slate-100" {...props} />,
+              p: ({node, ...props}) => <p className="mb-3" {...props} />,
+              ul: ({node, ...props}) => <ul className="list-disc list-outside ms-4 mb-3 space-y-1" {...props} />,
+              li: ({node, ...props}) => <li className="" {...props} />,
+              strong: ({node, ...props}) => <strong className="font-bold text-slate-900 dark:text-slate-100" {...props} />,
+              a: ({node, ...props}) => <a className="text-blue-600 hover:underline" {...props} />,
+            }}
+          >
+            {analysis.summary}
+          </ReactMarkdown>
         </div>
       </div>
 
