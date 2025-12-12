@@ -6,6 +6,8 @@ export interface GoldData {
   price21k: number;
   price18k: number;
   usdRate: number;
+  workmanshipMin: number;
+  workmanshipMax: number;
   lastUpdated: string;
 }
 
@@ -15,22 +17,25 @@ export interface HistoricalDataPoint {
   usdRate: number;
 }
 
+export interface NewsItem {
+  headline: string;
+  source: string;
+}
+
 export interface MarketAnalysis {
   prediction: 'UP' | 'DOWN' | 'STABLE';
   summary: string;
   reasoning: string[];
   sources: Array<{ title: string; url: string }>;
+  news: NewsItem[];
 }
 
 export interface AppState {
   theme: Theme;
   language: Language;
   isLoading: boolean;
-  isLoadingHistory: boolean;
   error: string | null;
   data: GoldData | null;
-  historicalData: HistoricalDataPoint[];
-  historyTimeRange: '1W' | '1M' | '3M';
   analysis: MarketAnalysis | null;
   nextUpdate: number; // Timestamp
 }

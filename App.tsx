@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppState } from './types';
-import { fetchGoldMarketData, fetchHistoricalData } from './services/geminiService';
+import { fetchGoldMarketData } from './services/geminiService';
 import { getTranslation } from './utils/translations';
 import GoldPriceCard from './components/GoldPriceCard';
 import MarketAnalysisComponent from './components/MarketAnalysis';
 import CurrencyTicker from './components/CurrencyTicker';
 import UpdateTimer from './components/UpdateTimer';
-import PriceChart from './components/PriceChart';
+import WorkmanshipWidget from './components/WorkmanshipWidget';
+import NewsFeed from './components/NewsFeed';
 import { TrendingUp, Globe, Moon, Sun } from 'lucide-react';
 
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
@@ -16,12 +17,9 @@ const App: React.FC = () => {
     theme: 'dark',
     language: 'en',
     isLoading: true,
-    isLoadingHistory: false,
     error: null,
     data: null,
     analysis: null,
-    historicalData: [],
-    historyTimeRange: '1M',
     nextUpdate: Date.now() + REFRESH_INTERVAL_MS,
   });
 
@@ -81,23 +79,9 @@ const App: React.FC = () => {
     }
   }, [state.language, t.error]);
 
-  const loadHistory = useCallback(async (range: '1W' | '1M' | '3M') => {
-    setState(prev => ({ ...prev, isLoadingHistory: true, historyTimeRange: range }));
-    try {
-        const history = await fetchHistoricalData(range);
-        setState(prev => ({ ...prev, isLoadingHistory: false, historicalData: history }));
-    } catch (error) {
-        console.error("Failed to load history", error);
-        setState(prev => ({ ...prev, isLoadingHistory: false }));
-    }
-  }, []);
-
   // Fetch data when language changes or on mount
   useEffect(() => {
     loadData();
-    if (state.historicalData.length === 0) {
-      loadHistory('1M'); 
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.language]); 
 
@@ -154,7 +138,7 @@ const App: React.FC = () => {
               
               <UpdateTimer 
                 nextUpdate={state.nextUpdate} 
-                onRefresh={() => { loadData(); loadHistory(state.historyTimeRange); }} 
+                onRefresh={loadData} 
                 isLoading={state.isLoading} 
                 language={state.language}
               />
@@ -210,21 +194,29 @@ const App: React.FC = () => {
         {/* Main Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Charts and Analysis Column */}
-          <div className="lg:col-span-2 space-y-8">
-             <PriceChart 
-                data={state.historicalData} 
-                loading={state.isLoadingHistory} 
-                timeRange={state.historyTimeRange}
-                onTimeRangeChange={loadHistory}
-                language={state.language}
-                theme={state.theme}
-             />
-             <MarketAnalysisComponent 
-                analysis={state.analysis} 
-                loading={state.isLoading} 
-                language={state.language}
-             />
+          {/* Main Info Column */}
+          <div className="lg:col-span-2 space-y-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <WorkmanshipWidget 
+                  min={state.data?.workmanshipMin || 60} 
+                  max={state.data?.workmanshipMax || 150} 
+                  loading={state.isLoading}
+                  language={state.language}
+                />
+                <NewsFeed 
+                  news={state.analysis?.news || []} 
+                  loading={state.isLoading} 
+                  language={state.language} 
+                />
+             </div>
+             
+             <div className="h-[400px]">
+               <MarketAnalysisComponent 
+                  analysis={state.analysis} 
+                  loading={state.isLoading} 
+                  language={state.language}
+               />
+             </div>
           </div>
 
           {/* Side Panel: Quick Info / Metadata */}

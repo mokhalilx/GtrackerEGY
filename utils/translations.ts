@@ -24,7 +24,7 @@ export const translations = {
     proTipTitle: "Pro Tip",
     proTipContent: "Gold prices in Egypt are heavily correlated with the parallel market USD exchange rate. Watch the USD ticker closely.",
     disclaimerTitle: "Disclaimer",
-    disclaimerContent: "Historical data is generated via AI search and may be approximate. Always verify with official financial sources before trading.",
+    disclaimerContent: "Data is generated via AI search and may be approximate. Workmanship fees vary by shop. Always verify with official financial sources.",
     retry: "Retry",
     error: "Failed to fetch market data. Please try again later. Ensure you have a valid API Key.",
     loading: "Analyzing market data...",
@@ -36,7 +36,13 @@ export const translations = {
     trend_UP: "UP",
     trend_DOWN: "DOWN",
     trend_STABLE: "STABLE",
-    refresh: "Refresh Now"
+    refresh: "Refresh Now",
+    workmanshipTitle: "Craftsmanship Fees (Masnahiya)",
+    workmanshipDesc: "Estimated fees per gram (21k)",
+    newsTitle: "Local Market News",
+    min: "Min",
+    max: "Max",
+    avg: "Avg"
   },
   ar: {
     title: "GoldTracker",
@@ -61,7 +67,7 @@ export const translations = {
     proTipTitle: "نصيحة للمحترفين",
     proTipContent: "ترتبط أسعار الذهب في مصر ارتباطاً وثيقاً بسعر صرف الدولار في السوق الموازي. راقب سعر الدولار بعناية.",
     disclaimerTitle: "تنويه",
-    disclaimerContent: "البيانات التاريخية مولدة عبر بحث الذكاء الاصطناعي وقد تكون تقريبية. تأكد دائماً من المصادر المالية الرسمية.",
+    disclaimerContent: "البيانات مولدة عبر بحث الذكاء الاصطناعي وقد تكون تقريبية. تختلف المصنعية من محل لآخر. تأكد دائماً من المصادر الرسمية.",
     retry: "إعادة المحاولة",
     error: "فشل في جلب بيانات السوق. يرجى التأكد من مفتاح API والمحاولة مرة أخرى.",
     loading: "جاري تحليل بيانات السوق...",
@@ -73,7 +79,13 @@ export const translations = {
     trend_UP: "صعود",
     trend_DOWN: "هبوط",
     trend_STABLE: "استقرار",
-    refresh: "تحديث الآن"
+    refresh: "تحديث الآن",
+    workmanshipTitle: "سعر المصنعية (تقديري)",
+    workmanshipDesc: "رسوم المصنعية للجرام (عيار 21)",
+    newsTitle: "أخبار السوق المحلي",
+    min: "أقل سعر",
+    max: "أعلى سعر",
+    avg: "متوسط"
   }
 };
 
